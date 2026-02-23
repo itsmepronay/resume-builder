@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Professional Resume Builder</title>
+<style>
+    :root {
+        --primary-color: #2c3e50;
+        --secondary-color: #34495e;
+        --accent-color: #3498db;
+        --bg-color: #f8f9fa;
+        --page-bg: #525659;
+        --danger-color: #e74c3c;
+        --success-color: #27ae60;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: var(--bg-color);
+        display: flex;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    /* Split Screen Layout */
+    .editor-pane {
+        width: 40%;
+        background: #ffffff;
+        padding: 20px 30px;
+        overflow-y: auto;
+        box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        z-index: 10;
+    }
+
+    .preview-pane {
+        width: 60%;
+        background: var(--page-bg);
+        overflow-y: auto;
+        display: flex;
+        justify-content: center;
+        padding: 40px 20px;
+    }
+
+    /* Editor Styling */
+    .editor-pane h2 {
+        color: var(--primary-color);
+        border-bottom: 2px solid var(--accent-color);
+        padding-bottom: 10px;
+        margin-top: 0;
+    }
+
+    .section-card {
+        background: #fdfdfd;
+        border: 1px solid #e0e0e0;
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 6px;
+        position: relative;
+    }
+
+    .section-card h3 {
+        margin-top: 0;
+        font-size: 1.1rem;
+        color: var(--secondary-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .form-group {
+        margin-bottom: 12px;
+    }
+
+    .form-group label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 5px;
+        color: #555;
+    }
+
+    .form-group input, .form-group textarea {
+        width: 100%;
+        padding: 8px 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-family: inherit;
+        box-sizing: border-box;
+    }
+
+    .form-group textarea {
+        resize: vertical;
+        min-height: 80px;
+    }
+
+    .btn {
+        background-color: var(--accent-color);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: bold;
+        display: inline-block;
+        text-align: center;
+    }
+
+    .btn:hover { background-color: #2980b9; }
+
+    .btn-add {
+        background-color: var(--success-color);
+        font-size: 0.9rem;
+        padding: 8px 15px;
+        margin-bottom: 20px;
+        width: 100%;
+    }
+    .btn-add:hover { background-color: #219653; }
+
+    .btn-remove {
+        background-color: var(--danger-color);
+        color: white;
+        border: none;
+        padding: 4px 8px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.8rem;
+    }
+    .btn-remove:hover { background-color: #c0392b; }
+
+    /* Resume Preview Styling */
+    .resume-document {
+        background: white;
+        width: 210mm; /* A4 width */
+        min-height: 297mm; /* A4 height */
+        padding: 20mm;
+        box-sizing: border-box;
+        box-shadow: 0 0 15px rgba(0,0,0,0.3);
+        font-family: 'Arial', sans-serif;
+        color: #333;
+        line-height: 1.5;
+    }
+
+    .r-header {
+        border-bottom: 2px solid #333;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+        text-align: left;
+    }
+
+    .r-name {
+        font-size: 24pt;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin: 0;
+        color: #222;
+    }
+
+    .r-contact {
+        font-size: 10pt;
+        color: #555;
+        margin-top: 5px;
+    }
+
+    .r-section {
+        display: grid;
+        grid-template-columns: 140px 1fr;
+        gap: 20px;
+        margin-bottom: 15px;
+    }
+
+    .r-section-title {
+        font-size: 10pt;
+        font-weight: bold;
+        text-transform: uppercase;
+        color: #222;
+        border-right: 1px solid #ccc;
+        padding-right: 15px;
+        text-align: right;
+        margin-top: 2px;
+    }
+
+    .r-section-content {
+        font-size: 10pt;
+    }
+
+    .r-job-header, .r-edu-header {
+        display: flex;
+        justify-content: space-between;
+        font-weight: bold;
+        margin-bottom: 2px;
+    }
+
+    .r-edu-institution {
+        font-style: italic;
+        margin-bottom: 5px;
+    }
+
+    .r-bullets {
+        margin: 0;
+        padding-left: 18px;
+    }
+
+    .r-bullets li {
+        margin-bottom: 4px;
+        text-align: justify;
+    }
+
+    .r-skills-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 5px;
+        margin: 0;
+        padding-left: 18px;
+    }
+
+    /* Print Styles */
+    @media print {
+        body { display: block; background: white; height: auto; overflow: visible; }
+        .editor-pane { display: none; }
+        .preview-pane { width: 100%; padding: 0; background: white; display: block; }
+        .resume-document { width: 100%; min-height: auto; box-shadow: none; padding: 0; margin: 0; }
+        @page { margin: 15mm; size: A4; }
+    }
+</style>
+</head>
+<body>
+
+    <div class="editor-pane">
+        <h2>Resume Builder</h2>
+        <button class="btn" onclick="window.print()" style="width: 100%; background-color: var(--primary-color); margin-bottom: 20px;">💾 Save as PDF / Print</button>
+
+        <div class="section-card">
+            <h3>Personal Information</h3>
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="in-name" value="Pronay Sarkar">
+            </div>
+            <div class="form-group">
+                <label>Contact Details</label>
+                <input type="text" id="in-contact" value="hello@pronaysarkar.com | +91-971-168-5142 | 10A/10779 Gali 8, WEA, Karol Bagh, New Delhi 110005">
+            </div>
+        </div>
+
+        <div class="section-card">
+            <h3>Summary</h3>
+            <div class="form-group">
+                <textarea id="in-summary">Healthcare Revenue Cycle Specialist with over three years of experience in hospital billing, accounts receivable management, and account auditing. Experienced in denial management, payer follow-ups, insurance verification and ensuring timely insurance reimbursements. Proficient in Microsoft Excel, with strong analytical skills, effective communication, and a collaborative, quality-focused approach.</textarea>
+            </div>
+        </div>
+
+        <div>
+            <h3 style="border-bottom: 1px solid #ccc; padding-bottom: 5px;">Work Experience</h3>
+            <div id="jobs-editor-list"></div>
+            <button class="btn btn-add" onclick="addJob()">+ Add Work Experience</button>
+        </div>
+
+        <div>
+            <h3 style="border-bottom: 1px solid #ccc; padding-bottom: 5px;">Education</h3>
+            <div id="edu-editor-list"></div>
+            <button class="btn btn-add" onclick="addEdu()">+ Add Education</button>
+        </div>
+
+        <div class="section-card">
+            <h3>Key Skills & Languages</h3>
+            <div class="form-group">
+                <label>Skills (One per line)</label>
+                <textarea id="in-skills">Office Suite software
+EHR Softwares (Epic & Cerner)
+Data entry
+Problem solving
+Organizational and time management skills
+Customer service
+Corporate communications
+Attention to details
+Teamwork</textarea>
+            </div>
+            <div class="form-group">
+                <label>Languages (One per line)</label>
+                <textarea id="in-lang">Fluent in English and Bangla.
+Hindi</textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="preview-pane">
+        <div class="resume-document">
+
+            <div class="r-header">
+                <h1 class="r-name" id="out-name">Pronay Sarkar</h1>
+                <div class="r-contact" id="out-contact">hello@pronaysarkar.com | +91-971-168-5142 | 10A/10779 Gali 8, WEA, Karol Bagh, New Delhi 110005</div>
+            </div>
+
+            <div class="r-section">
+                <div class="r-section-title">Summary</div>
+                <div class="r-section-content" id="out-summary">
+                    Healthcare Revenue Cycle Specialist...
+                </div>
+            </div>
+
+            <div class="r-section">
+                <div class="r-section-title">Work Experience</div>
+                <div class="r-section-content" id="jobs-preview-list">
+                    </div>
+            </div>
+
+            <div class="r-section">
+                <div class="r-section-title">Education</div>
+                <div class="r-section-content" id="edu-preview-list">
+                    </div>
+            </div>
+
+            <div class="r-section">
+                <div class="r-section-title">Key Skills</div>
+                <div class="r-section-content">
+                    <ul class="r-skills-grid" id="out-skills"></ul>
+                </div>
+            </div>
+
+            <div class="r-section">
+                <div class="r-section-title">Languages</div>
+                <div class="r-section-content">
+                    <ul class="r-bullets" id="out-lang"></ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        let jobCount = 0;
+        let eduCount = 0;
+
+        // Binding Functions
+        function bindText(inputId, outputId) {
+            const inputEl = document.getElementById(inputId);
+            const outputEl = document.getElementById(outputId);
+            outputEl.innerText = inputEl.value;
+            inputEl.addEventListener('input', (e) => { outputEl.innerText = e.target.value; });
+        }
+
+        function bindList(inputId, outputId) {
+            const inputEl = document.getElementById(inputId);
+            const outputEl = document.getElementById(outputId);
+            const updateList = () => {
+                const items = inputEl.value.split('\n').filter(item => item.trim() !== '');
+                outputEl.innerHTML = items.map(item => `<li>${item}</li>`).join('');
+            };
+            updateList();
+            inputEl.addEventListener('input', updateList);
+        }
+
+        // --- Work Experience Logic ---
+        function addJob(company = '', date = '', desc = '') {
+            jobCount++;
+            const id = jobCount;
+
+            // 1. Create Editor Block
+            const editorDiv = document.createElement('div');
+            editorDiv.className = 'section-card';
+            editorDiv.id = `edit-job-${id}`;
+            editorDiv.innerHTML = `
+                <h3>Role ${id} <button class="btn-remove" onclick="removeJob(${id})">Remove</button></h3>
+                <div class="form-group"><input type="text" id="in-job${id}-company" placeholder="Company / Title" value="${company}"></div>
+                <div class="form-group"><input type="text" id="in-job${id}-date" placeholder="Date Range" value="${date}"></div>
+                <div class="form-group">
+                    <label>Responsibilities (One per line)</label>
+                    <textarea id="in-job${id}-desc">${desc}</textarea>
+                </div>
+            `;
+            document.getElementById('jobs-editor-list').appendChild(editorDiv);
+
+            // 2. Create Preview Block
+            const previewDiv = document.createElement('div');
+            previewDiv.id = `preview-job-${id}`;
+            previewDiv.style.marginBottom = "15px";
+            previewDiv.innerHTML = `
+                <div class="r-job-header">
+                    <span id="out-job${id}-company"></span>
+                    <span id="out-job${id}-date"></span>
+                </div>
+                <ul class="r-bullets" id="out-job${id}-desc"></ul>
+            `;
+            document.getElementById('jobs-preview-list').appendChild(previewDiv);
+
+            // 3. Bind them together
+            bindText(`in-job${id}-company`, `out-job${id}-company`);
+            bindText(`in-job${id}-date`, `out-job${id}-date`);
+            bindList(`in-job${id}-desc`, `out-job${id}-desc`);
+        }
+
+        function removeJob(id) {
+            document.getElementById(`edit-job-${id}`).remove();
+            document.getElementById(`preview-job-${id}`).remove();
+        }
+
+        // --- Education Logic ---
+        function addEdu(degree = '', inst = '', date = '') {
+            eduCount++;
+            const id = eduCount;
+
+            // 1. Create Editor Block
+            const editorDiv = document.createElement('div');
+            editorDiv.className = 'section-card';
+            editorDiv.id = `edit-edu-${id}`;
+            editorDiv.innerHTML = `
+                <h3>Education ${id} <button class="btn-remove" onclick="removeEdu(${id})">Remove</button></h3>
+                <div class="form-group"><input type="text" id="in-edu${id}-degree" placeholder="Degree / Certification" value="${degree}"></div>
+                <div class="form-group"><input type="text" id="in-edu${id}-inst" placeholder="Institution" value="${inst}"></div>
+                <div class="form-group"><input type="text" id="in-edu${id}-date" placeholder="Dates & Notes (e.g., CGPA)" value="${date}"></div>
+            `;
+            document.getElementById('edu-editor-list').appendChild(editorDiv);
+
+            // 2. Create Preview Block
+            const previewDiv = document.createElement('div');
+            previewDiv.id = `preview-edu-${id}`;
+            previewDiv.style.marginBottom = "10px";
+            previewDiv.innerHTML = `
+                <div class="r-edu-header">
+                    <span id="out-edu${id}-degree"></span>
+                    <span id="out-edu${id}-date"></span>
+                </div>
+                <div class="r-edu-institution" id="out-edu${id}-inst"></div>
+            `;
+            document.getElementById('edu-preview-list').appendChild(previewDiv);
+
+            // 3. Bind them together
+            bindText(`in-edu${id}-degree`, `out-edu${id}-degree`);
+            bindText(`in-edu${id}-inst`, `out-edu${id}-inst`);
+            bindText(`in-edu${id}-date`, `out-edu${id}-date`);
+        }
+
+        function removeEdu(id) {
+            document.getElementById(`edit-edu-${id}`).remove();
+            document.getElementById(`preview-edu-${id}`).remove();
+        }
+
+        // --- Initialization ---
+        window.onload = () => {
+            // Bind static elements
+            bindText('in-name', 'out-name');
+            bindText('in-contact', 'out-contact');
+            bindText('in-summary', 'out-summary');
+            bindList('in-skills', 'out-skills');
+            bindList('in-lang', 'out-lang');
+
+            // Load initial Job data
+            addJob(
+                "R1 RCM",
+                "Jul 2025 - Present",
+                "Analyzed claim rejections and denials, identified root causes, corrected errors, and refiled claims in compliance with payer guidelines.\nVerified patient eligibility and benefits; identified coordination of benefits (COB) and secondary insurance coverage when applicable.\nReviewed authorization-related denials; validated existing authorizations for accuracy, timeliness, and service alignment.\nCoordinated retro-authorization requests with payers when permitted to support claim reimbursement.\nConducted patient outreach through letters for COB, accidental, and workers' compensation questionnaires.\nPrepared and submitted appeals for medical necessity, DRG downgrades, and ED downgrades based on coding statements and payer policies.\nCollaborated with coding and clinical documentation teams to ensure accuracy prior to appeal submission.\nEnsured timely follow-ups with payers to maximize reimbursement and reduce AR aging."
+            );
+            addJob(
+                "Corro Health",
+                "Aug 2024 - Jul 2025",
+                "Managed end-to-end hospital billing and denial resolution for IPA and Capitated plans under DOFR guidelines, ensuring accurate claim submission and financial responsibility allocation.\nResolved complex denials including authorization, medical necessity, timely filing, eligibility, COB, duplicate, and bundling issues through detailed analysis and payer communication.\nPrepared appeals and corrected claims with supporting documentation while maintaining HIPAA compliance, coordination with internal teams, and adherence to productivity and SLA standards."
+            );
+            addJob(
+                "Access Healthcare (formerly Pacific Global)",
+                "Sep 2022 - Aug 2024",
+                "Performed end-to-end AR follow-up and denial resolution for multiple Ardent Health hospitals by reviewing claim status, EOBs, and denial codes.\nResolved key denials including authorization, medical necessity, timely filing, eligibility, COB, duplicate, and bundled service issues.\nPrepared appeals and reconsiderations with supporting documents while ensuring accurate documentation and HIPAA compliance."
+            );
+
+            // Load initial Education data
+            addEdu("Bachelor of Science in Botany", "University of Delhi, New Delhi", "May 2017 - Sep 2020 (CGPA: 5.40)");
+            addEdu("High School", "Janta Bal Niketan Sr. Sec. School, Jaipur", "July 2016 - Mar 2017 (Percentage: 72.60%)");
+        };
+    </script>
+</body>
+</html>
