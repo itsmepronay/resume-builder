@@ -6,7 +6,7 @@ The application runs entirely on **HTML, CSS, and Vanilla JavaScript** — no ba
 ---
 
 ## 🚀 Live Preview
-> Open `index.html` directly in your browser  
+> Open `index.html` or `[Resume Builder](https://itsmepronay.github.io/resume-builder/)` directly in your browser  
 or  
 Host it using **GitHub Pages** for public access.
 
