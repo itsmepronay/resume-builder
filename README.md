@@ -5,10 +5,10 @@ The application runs entirely on **HTML, CSS, and Vanilla JavaScript** — no ba
 
 ---
 
-## 🚀 Live Preview
-> Open `index.html` or `[Resume Builder](https://itsmepronay.github.io/resume-builder/)` directly in your browser  
-or  
-Host it using **GitHub Pages** for public access.
+## 🚀 Live Demo
+
+👉 **Try it here:**  
+🔗 https://itsmepronay.github.io/resume-builder/
 
 ---
 
@@ -40,7 +40,7 @@ Host it using **GitHub Pages** for public access.
 - 🔒 **Privacy Friendly**
   - No data storage
   - No tracking
-  - Runs completely offline
+  - Runs completely offline in the browser
 
 ---
 
@@ -48,7 +48,7 @@ Host it using **GitHub Pages** for public access.
 
 - **HTML5** – Structure  
 - **CSS3** – Responsive design, print styles  
-- **JavaScript (Vanilla)** – Dynamic rendering & data binding  
+- **JavaScript (Vanilla)** – Dynamic rendering & DOM binding  
 
 No frameworks. No libraries. No dependencies.
 
