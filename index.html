@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Professional Resume Builder</title>
+<title>Responsive Professional Resume Builder</title>
 <style>
     :root {
         --primary-color: #2c3e50;
@@ -25,7 +25,7 @@
         overflow: hidden;
     }
 
-    /* Split Screen Layout */
+    /* Split Screen Layout (Desktop) */
     .editor-pane {
         width: 40%;
         background: #ffffff;
@@ -33,6 +33,7 @@
         overflow-y: auto;
         box-shadow: 2px 0 10px rgba(0,0,0,0.1);
         z-index: 10;
+        box-sizing: border-box;
     }
 
     .preview-pane {
@@ -42,6 +43,7 @@
         display: flex;
         justify-content: center;
         padding: 40px 20px;
+        box-sizing: border-box;
     }
 
     /* Editor Styling */
@@ -68,6 +70,8 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
     }
 
     .form-group {
@@ -107,6 +111,7 @@
         font-weight: bold;
         display: inline-block;
         text-align: center;
+        box-sizing: border-box;
     }
 
     .btn:hover { background-color: #2980b9; }
@@ -134,7 +139,8 @@
     /* Resume Preview Styling */
     .resume-document {
         background: white;
-        width: 210mm; /* A4 width */
+        width: 100%;
+        max-width: 210mm; /* A4 width */
         min-height: 297mm; /* A4 height */
         padding: 20mm;
         box-sizing: border-box;
@@ -164,6 +170,7 @@
         font-size: 10pt;
         color: #555;
         margin-top: 5px;
+        word-wrap: break-word;
     }
 
     .r-section {
@@ -193,6 +200,8 @@
         justify-content: space-between;
         font-weight: bold;
         margin-bottom: 2px;
+        flex-wrap: wrap;
+        gap: 5px;
     }
 
     .r-edu-institution {
@@ -218,12 +227,82 @@
         padding-left: 18px;
     }
 
-    /* Print Styles */
+    /* 📱 MOBILE RESPONSIVE MEDIA QUERIES */
+    @media screen and (max-width: 850px) {
+        body {
+            flex-direction: column;
+            overflow-y: auto;
+            height: auto;
+        }
+
+        .editor-pane {
+            width: 100%;
+            overflow-y: visible;
+            box-shadow: none;
+            border-bottom: 5px solid var(--primary-color);
+        }
+
+        .preview-pane {
+            width: 100%;
+            overflow-y: visible;
+            padding: 20px 10px;
+        }
+
+        .resume-document {
+            padding: 15px;
+            min-height: auto;
+        }
+
+        /* Change A4 Layout to single column on small screens so text stays readable */
+        .r-section {
+            grid-template-columns: 1fr;
+            gap: 5px;
+            margin-bottom: 20px;
+        }
+
+        .r-section-title {
+            text-align: left;
+            border-right: none;
+            border-bottom: 2px solid #ccc;
+            padding-right: 0;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+        }
+
+        .r-skills-grid {
+            grid-template-columns: 1fr; /* 1 column for skills on mobile */
+        }
+    }
+
+    /* 🖨️ Print Styles */
     @media print {
         body { display: block; background: white; height: auto; overflow: visible; }
         .editor-pane { display: none; }
         .preview-pane { width: 100%; padding: 0; background: white; display: block; }
-        .resume-document { width: 100%; min-height: auto; box-shadow: none; padding: 0; margin: 0; }
+        .resume-document {
+            width: 100%;
+            max-width: none;
+            min-height: auto;
+            box-shadow: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        /* Force two-column layout back on during print, even if printed from mobile */
+        .r-section {
+            grid-template-columns: 140px 1fr !important;
+            gap: 20px !important;
+        }
+        .r-section-title {
+            text-align: right !important;
+            border-right: 1px solid #ccc !important;
+            border-bottom: none !important;
+            padding-right: 15px !important;
+        }
+        .r-skills-grid {
+            grid-template-columns: 1fr 1fr !important;
+        }
+
         @page { margin: 15mm; size: A4; }
     }
 </style>
@@ -242,7 +321,7 @@
             </div>
             <div class="form-group">
                 <label>Contact Details</label>
-                <input type="text" id="in-contact" value="hello@pronaysarkar.com | +91-971-168-5142 | 10A/10779 Gali 8, WEA, Karol Bagh, New Delhi 110005">
+                <input type="text" id="in-contact" value="hello@youremail.com | +1-999-111-5142 | 701 E Parks Hwy, Wasilla, Alaska 99654-701">
             </div>
         </div>
 
